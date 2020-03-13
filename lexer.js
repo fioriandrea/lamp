@@ -1,6 +1,18 @@
 const tk = require('./token.js');
 const er = require('./errors/errorReporter.js');
 
+function isNum(ch) {
+    return /^[0-9]$/.test(ch);
+}
+
+function isAlpha(ch) {
+    return /^[A-Za-z]$/.test(ch);
+}
+
+function isAlphaNum(ch) {
+    return isAlpha(ch) || isNum(ch);
+}
+
 const keywords = Object.freeze({
     'and': tk.types.AND,
     'or': tk.types.OR,
@@ -30,6 +42,7 @@ function tokenize(program) {
         start = current;
     }
 
+    addEmptyToken(tk.types.NEW_LINE); // to put a ';' after the last statement
     finishIndentation();
     addEmptyToken(tk.types.EOF);
     return tokens;
@@ -152,13 +165,8 @@ function tokenize(program) {
 
     function scanIndentation() {
         let indentation = getIndentation();
-        // skip empty lines
-        if (atEnd()) return;
-        if (peek() === '\n') {
-            consume();
-            line++;
-            return;
-        }
+        // don't indent empty lines
+        if (atEnd() || peek() === '\n') return;
 
         if (indentation > indentStack[indentStack.length - 1]) {
             indentStack.push(indentation);
@@ -209,14 +217,27 @@ function tokenize(program) {
     }
 }
 
-function isNum(ch) {
-    return /^[0-9]$/.test(ch);
-}
+function layOut(tokens) {
 
-function isAlpha(ch) {
-    return /^[A-Za-z]$/.test(ch);
-}
+    return makeCompact(removeLeadingNewLines(tokens));
 
-function isAlphaNum(ch) {
-    return isAlpha(ch) || isNum(ch);
+    function removeLeadingNewLines(tokens) {
+        const withoutLeading = tokens;
+        while (withoutLeading[0].type === tk.types.NEW_LINE) withoutLeading.shift(); // remove '\n' at the beginning
+        return withoutLeading;
+    }
+
+    function makeCompact(tokens) {
+        const cleanTokens = [];
+        for (let i = 0; i < tokens.length - 1; i++) {
+            if (tokens[i].type === tk.types.NEW_LINE && tokens[i + 1].type === tk.types.INDENT)
+                continue; // makes newline + indent = indent
+            else if (tokens[i].type === tk.types.NEW_LINE && tokens[i + 1].type === tk.types.NEW_LINE)
+                continue; // makes consecutive new lines a single new line
+             else
+                cleanTokens.push(tokens[i]);
+        }
+        cleanTokens.push(tokens[tokens.length - 1]); // last token
+        return cleanTokens;
+    }
 }
