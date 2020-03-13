@@ -18,7 +18,6 @@ const types = Object.freeze({
     // Single or double character
     EXCLAMATION_MARK: Symbol('!'),
     NOT_EQUAL: Symbol('!='),
-    DOUBLE_EXCLAMATION_MARK: Symbol('!!'),
     EQUAL: Symbol('='),
     EQUAL_EQUAL: Symbol('=='),
     MINUS: Symbol('-'),

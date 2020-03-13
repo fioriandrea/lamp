@@ -73,12 +73,7 @@ function tokenize(program) {
             case '#': comment(); break;
 
             // single or double character
-            case '!':
-                let type = tk.types.EXCLAMATION_MARK;
-                if (eat('=')) type = tk.types.NOT_EQUAL;
-                else if (eat('!')) type = tk.types.DOUBLE_EXCLAMATION_MARK;
-                addToken(type);
-                break;
+            case '!': addToken(eat('=') ? tk.types.NOT_EQUAL : tk.types.EXCLAMATION_MARK); break;
             case '=': addToken(eat('=') ? tk.types.EQUAL_EQUAL : tk.types.EQUAL); break;
             case '-': addToken(eat('>') ? tk.types.ARROW : tk.types.MINUS); break;
             case '+': addToken(eat('+') ? tk.types.PLUS_PLUS : tk.types.PLUS); break;
