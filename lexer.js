@@ -63,7 +63,6 @@ function tokenize(program) {
             case ']': addToken(tk.types.RIGHT_SQUARE_BRACKET); break;
             case '{': addToken(tk.types.LEFT_CURLY_BRACKET); break;
             case '}': addToken(tk.types.RIGHT_CURLY_BRACKET); break;
-            case '+': addToken(tk.types.PLUS); break;
             case '*': addToken(tk.types.STAR); break;
             case '/': addToken(tk.types.SLASH); break;
             case '^': addToken(tk.types.CIRCUMFLEX); break;
@@ -82,6 +81,7 @@ function tokenize(program) {
                 break;
             case '=': addToken(eat('=') ? tk.types.EQUAL_EQUAL : tk.types.EQUAL); break;
             case '-': addToken(eat('>') ? tk.types.ARROW : tk.types.MINUS); break;
+            case '+': addToken(eat('+') ? tk.types.PLUS_PLUS : tk.types.PLUS); break;
             case '>': addToken(eat('=') ? tk.types.GREATER_EQUAL : tk.types.GREATER); break;
             case '<': addToken(eat('=') ? tk.types.LESS_EQUAL : tk.types.LESS); break;
             case ' ':
