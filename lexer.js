@@ -18,6 +18,7 @@ const keywords = Object.freeze({
 });
 
 function tokenize(program) {
+    program = program.replace(/(\r\n|\r|\n)/gm, '\n'); // remove all \r and \r\n from program
     const tokens = [];
     const indentStack = [0];
     let start = 0;
@@ -74,7 +75,9 @@ function tokenize(program) {
             case '\t':
             case '\r':
                 break;
-            case '\n': newLine(); break;
+            case '\n':
+                newLine();
+                break;
             case '\'': string(); break;
             default:
                 if (isNum(ch)) {
@@ -149,8 +152,12 @@ function tokenize(program) {
 
     function scanIndentation() {
         let indentation = getIndentation();
-        if (atEnd() || peek() === '\n') {
-
+        // skip empty lines
+        if (atEnd()) return;
+        if (peek() === '\n') {
+            consume();
+            line++;
+            return;
         }
 
         if (indentation > indentStack[indentStack.length - 1]) {
