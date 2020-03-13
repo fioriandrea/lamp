@@ -241,3 +241,9 @@ function layOut(tokens) {
         return cleanTokens;
     }
 }
+
+function scan(program) {
+    return layOut(tokenize(program));
+}
+
+module.exports = scan;
