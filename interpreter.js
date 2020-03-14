@@ -3,6 +3,33 @@ const er = require('./errors/errorReporter.js');
 const {RuntimeError} = require('./errors/errors.js');
 
 class Interpreter {
+    constructor(statList) {
+        this.statList = statList;
+    }
+
+    interpret() {
+        for (let i = 0; i < this.statList.length; i++) {
+            this.execute(this.statList[i]);
+        }
+    }
+
+    // statements
+
+    execute(stat) {
+        return stat.accept(this);
+    }
+
+    visitPrintStat(stat) {
+        const expr = this.evaluate(stat.expression);
+        console.log(expr);
+    }
+
+    visitExpressionStat(stat) {
+        this.evaluate(stat.expression);
+    }
+
+    // expressions
+
     evaluate(expr) {
         return expr.accept(this);
     }
@@ -124,6 +151,8 @@ class Interpreter {
         }
         return valueList;
     }
+
+    // helpers
 
     _concat(left, right) {
         if (this._isArray(left)) return left.concat(right);

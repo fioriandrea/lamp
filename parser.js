@@ -1,6 +1,7 @@
 const tk = require('./token.js');
 const er = require('./errors/errorReporter.js');
 const ex = require('./ast/expr.js');
+const st = require('./ast/stat.js');
 const {ParseError} = require('./errors/errors.js');
 
 function parse(tokens) {
@@ -9,8 +10,33 @@ function parse(tokens) {
     return program();
 
     function program() {
-        return expression();
+        const statList = [];
+        while (!atEnd()) {
+            statList.push(statement());
+        }
+        return statList;
     }
+
+    // statements
+
+    function statement() {
+        if (eatAny(tk.types.PRINT)) return print();
+        else return expressionStat();
+    }
+
+    function print() {
+        const expr = expression();
+        eatError(tk.types.NEW_LINE, 'expect new line after print statement');
+        return new st.Print(expr);
+    }
+
+    function expressionStat() {
+        const expr = expression();
+        eatError(tk.types.NEW_LINE, 'expect new line after expression statement');
+        return new st.Expression(expr);
+    }
+
+    // expressions
 
     function expression() {
         return comma();
