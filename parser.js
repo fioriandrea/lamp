@@ -20,8 +20,13 @@ function parse(tokens) {
     // statements
 
     function statement() {
-        if (eatAny(tk.types.PRINT)) return print();
-        else return expressionStat();
+        try {
+            if (eatAny(tk.types.PRINT)) return print();
+            else return expressionStat();
+        } catch(e) {
+            synchronize();
+            return null; // garbage statement
+        }
     }
 
     function print() {
@@ -200,7 +205,23 @@ function parse(tokens) {
         return new ParseError(token, message);
     }
 
-    // TODO: write synchronize
+    function synchronize() {
+        consume();
+        while (!atEnd()) {
+            if (previous().type === tk.types.NEW_LINE) return;
+            switch (peek().type) {
+                case tk.types.IF:
+                case tk.types.FUNC:
+                case tk.types.RET:
+                case tk.types.LET:
+                case tk.types.WHILE:
+                case tk.types.PRINT:
+                    return;
+                    break;
+            }
+            consume();
+        }
+    }
 
     function previous() {
         return tokens[scan - 1];
