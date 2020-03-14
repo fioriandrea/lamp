@@ -58,7 +58,6 @@ function tokenize(program) {
             // single character
             case ':': addToken(tk.types.COLON); break;
             case ',': addToken(tk.types.COMMA); break;
-            case '.': addToken(tk.types.DOT); break;
             case '-': addToken(tk.types.MINUS); break;
             case '*': addToken(tk.types.STAR); break;
             case '/': addToken(tk.types.SLASH); break;

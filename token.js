@@ -2,7 +2,6 @@ const types = Object.freeze({
     // Single character
     COLON: Symbol(':'),
     COMMA: Symbol(','),
-    DOT: Symbol('.'),
     LEFT_ROUND_BRACKET: Symbol('('),
     RIGHT_ROUND_BRACKET: Symbol(')'),
     LEFT_SQUARE_BRACKET: Symbol('['),
