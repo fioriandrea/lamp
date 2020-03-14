@@ -65,6 +65,27 @@ exports.Logical = class {
     }
 }
 
+exports.Variable = class {
+    constructor(token) {
+        this.token = token;
+    }
+
+    accept(visitor) {
+        return visitor.visitVariableExpr(this);
+    }
+}
+
+exports.Assign = class {
+    constructor(assigned, expression) {
+        this.assigned = assigned;
+        this.expression = expression;
+    }
+
+    accept(visitor) {
+        return visitor.visitAssignExpr(this);
+    }
+}
+
 exports.Array = class {
     constructor(exprList) {
         this.exprList = exprList;

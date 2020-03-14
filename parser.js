@@ -22,6 +22,7 @@ function parse(tokens) {
     function statement() {
         try {
             if (eatAny(tk.types.PRINT)) return print();
+            else if (eatAny(tk.types.LET)) return let();
             else return expressionStat();
         } catch(e) {
             synchronize();
@@ -33,6 +34,17 @@ function parse(tokens) {
         const expr = expression();
         eatError(tk.types.NEW_LINE, 'expect new line after print statement');
         return new st.Print(expr);
+    }
+
+    function let() {
+        eatError(tk.types.IDENTIFIER, 'expect variable name');
+        const identifier = previous();
+        let valueExpr = null;
+        if (eatAny(tk.types.EQUAL)) { // optional initialization
+            valueExpr = expression();
+        }
+        eatError(tk.types.NEW_LINE, 'expect new line after let statement');
+        return new st.Let(identifier, valueExpr);
     }
 
     function expressionStat() {
@@ -58,7 +70,24 @@ function parse(tokens) {
     }
 
     function nonCommaExpr() {
-        return ternary();
+        return assign();
+    }
+
+    function assign() {
+        let assigned = ternary();
+
+        if (eatAny(tk.types.EQUAL)) {
+            const equal = previous();
+            const value = expression();
+
+            if (assigned instanceof ex.Variable) {
+                return new ex.Assign(assigned, value);
+            }
+
+            error(equal, 'invalid assignment target')
+        }
+
+        return assigned;
     }
 
     function ternary() {
@@ -164,6 +193,8 @@ function parse(tokens) {
             const expr = expression();
             eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after expression');
             return new ex.Grouping(expr);
+        } else if (eatAny(tk.types.IDENTIFIER)) {
+            return new ex.Variable(previous());
         } else if (eatAny(tk.types.LEFT_SQUARE_BRACKET)) { // array literal
             return array();
         } else if (eatAny(tk.types.LEFT_CURLY_BRACKET)) { // map literal

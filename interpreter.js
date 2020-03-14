@@ -1,10 +1,12 @@
 const tk = require('./token.js');
 const er = require('./errors/errorReporter.js');
 const {RuntimeError} = require('./errors/errors.js');
+const Environment = require('./state/environment.js');
 
 class Interpreter {
     constructor(statList) {
         this.statList = statList;
+        this.environment = new Environment();
     }
 
     interpret() {
@@ -22,6 +24,12 @@ class Interpreter {
     visitPrintStat(stat) {
         const expr = this.evaluate(stat.expression);
         console.log(expr);
+    }
+
+    visitLetStat(stat) {
+        const name = stat.identifier.lexeme;
+        const value = stat.expression === null ? null : this.evaluate(stat.expression);
+        this.environment.define(name, value);
     }
 
     visitExpressionStat(stat) {
@@ -126,6 +134,12 @@ class Interpreter {
         return this._isTruthy(this.evaluate(firstExpr)) ? this.evaluate(secondExpr) : this.evaluate(thirdExpr);
     }
 
+    visitAssignExpr(expr) {
+        const assigned = expr.assigned.token;
+        const expression = this.evaluate(expr.expression);
+        return this.environment.assign(assigned, expression);
+    }
+
     visitLogicalExpr(expr) {
         const left = this.evaluate(expr.left);
         const operator = expr.operator;
@@ -142,6 +156,10 @@ class Interpreter {
                 return this._isTruthy(left) ? !this._isTruthy(right) : this._isTruthy(right);
                 break;
         }
+    }
+
+    visitVariableExpr(expr) {
+        return this.environment.get(expr.token);
     }
 
     visitArrayExpr(expr) {

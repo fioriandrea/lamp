@@ -18,3 +18,14 @@ exports.Expression = class {
     }
 }
 
+exports.Let = class {
+    constructor(identifier, expression) {
+        this.identifier = identifier;
+        this.expression = expression;
+    }
+
+    accept(visitor) {
+        return visitor.visitLetStat(this);
+    }
+}
+
