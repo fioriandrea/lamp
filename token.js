@@ -37,6 +37,7 @@ const types = Object.freeze({
     // Keywords
     AND: Symbol('and'),
     OR: Symbol('or'),
+    XOR: Symbol('xor'),
     IF: Symbol('if'),
     ELIF: Symbol('elif'),
     ELSE: Symbol('else'),

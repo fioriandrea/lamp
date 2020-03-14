@@ -16,6 +16,7 @@ function isAlphaNum(ch) {
 const keywords = Object.freeze({
     'and': tk.types.AND,
     'or': tk.types.OR,
+    'xor': tk.types.XOR,
     'if': tk.types.IF,
     'elif': tk.types.ELIF,
     'else': tk.types.ELSE,
