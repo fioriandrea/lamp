@@ -12,6 +12,10 @@ function parse(tokens) {
         return expression();
     }
 
+    function expression() {
+        return comma();
+    }
+
     function comma() {
         let left = ternary();
         while (eatAny(tk.types.COMMA)) {
@@ -48,7 +52,7 @@ function parse(tokens) {
         while (eatAny(tk.types.AND)) {
             const operator = previous();
             const right = equal();
-            left = new ex.Binary(left, operator, right);
+            left = new ex.Logical(left, operator, right);
         }
         return left;
     }

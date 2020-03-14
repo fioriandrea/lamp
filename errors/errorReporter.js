@@ -23,6 +23,6 @@ exports.parserError = function(token, report) {
     }
 }
 
-exports.runtimeError = function(rtError, report) {
-    reportError(rtError.token.line, `at '${token.lexeme}':`, report);
+exports.runtimeError = function(rtError) {
+    reportError(rtError.token.line, `at '${rtError.token.lexeme}':`, rtError.message);
 }
