@@ -59,6 +59,7 @@ function tokenize(program) {
             case ':': addToken(tk.types.COLON); break;
             case ',': addToken(tk.types.COMMA); break;
             case '.': addToken(tk.types.DOT); break;
+            case '-': addToken(tk.types.MINUS); break;
             case '*': addToken(tk.types.STAR); break;
             case '/': addToken(tk.types.SLASH); break;
             case '^': addToken(tk.types.CIRCUMFLEX); break;
@@ -96,7 +97,11 @@ function tokenize(program) {
 
             // single or double character
             case '!': addToken(eat('=') ? tk.types.NOT_EQUAL : tk.types.EXCLAMATION_MARK); break;
-            case '=': addToken(eat('=') ? tk.types.EQUAL_EQUAL : tk.types.EQUAL); break;
+            case '=':
+                if (eat('>')) addToken(tk.types.ARROW);
+                else if (eat('=')) addToken(tk.types.EQUAL_EQUAL);
+                else addToken(tk.types.EQUAL);
+                break;
             case '-': addToken(eat('>') ? tk.types.ARROW : tk.types.MINUS); break;
             case '+': addToken(eat('+') ? tk.types.PLUS_PLUS : tk.types.PLUS); break;
             case '>': addToken(eat('=') ? tk.types.GREATER_EQUAL : tk.types.GREATER); break;
