@@ -12,10 +12,6 @@ function parse(tokens) {
         return expression();
     }
 
-    function expression() {
-        return comma();
-    }
-
     function comma() {
         let left = ternary();
         while (eatAny(tk.types.COMMA)) {
@@ -79,7 +75,7 @@ function parse(tokens) {
 
     function sum() {
         let left = mult();
-        while (eatAny(tk.types.PLUS, tk.types.MINUS)) {
+        while (eatAny(tk.types.PLUS, tk.types.MINUS, tk.types.PLUS_PLUS)) {
             const operator = previous();
             const right = mult();
             left = new ex.Binary(left, operator, right);
