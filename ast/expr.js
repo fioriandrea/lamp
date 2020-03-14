@@ -1,8 +1,8 @@
 exports.Binary = class {
     constructor(left, operator, right) {
         this.left = left;
-        this. operator =  operator;
-        this. right =  right;
+        this.operator = operator;
+        this.right = right;
     }
 
     accept(visitor) {
@@ -13,7 +13,7 @@ exports.Binary = class {
 exports.Unary = class {
     constructor(operator, right) {
         this.operator = operator;
-        this. right =  right;
+        this.right = right;
     }
 
     accept(visitor) {
@@ -44,8 +44,8 @@ exports.Grouping = class {
 exports.Ternary = class {
     constructor(first, second, third) {
         this.first = first;
-        this. second =  second;
-        this. third =  third;
+        this.second = second;
+        this.third = third;
     }
 
     accept(visitor) {
@@ -56,8 +56,8 @@ exports.Ternary = class {
 exports.Logical = class {
     constructor(left, operator, right) {
         this.left = left;
-        this. operator =  operator;
-        this. right =  right;
+        this.operator = operator;
+        this.right = right;
     }
 
     accept(visitor) {
