@@ -37,6 +37,7 @@ function tokenize(program) {
     let start = 0;
     let current = 0;
     let line = 1;
+    let ignoreNewLines = false;
 
     while (!atEnd()) {
         scanToken();
@@ -58,17 +59,37 @@ function tokenize(program) {
             case ':': addToken(tk.types.COLON); break;
             case ',': addToken(tk.types.COMMA); break;
             case '.': addToken(tk.types.DOT); break;
-            case '(': addToken(tk.types.LEFT_ROUND_BRACKET); break;
-            case ')': addToken(tk.types.RIGHT_ROUND_BRACKET); break;
-            case '[': addToken(tk.types.LEFT_SQUARE_BRACKET); break;
-            case ']': addToken(tk.types.RIGHT_SQUARE_BRACKET); break;
-            case '{': addToken(tk.types.LEFT_CURLY_BRACKET); break;
-            case '}': addToken(tk.types.RIGHT_CURLY_BRACKET); break;
             case '*': addToken(tk.types.STAR); break;
             case '/': addToken(tk.types.SLASH); break;
             case '^': addToken(tk.types.CIRCUMFLEX); break;
             case '%': addToken(tk.types.PERCENTAGE); break;
             case '?': addToken(tk.types.QUESTION_MARK); break;
+
+            // brackets
+            case '(':
+                ignoreNewLines = true;
+                addToken(tk.types.LEFT_ROUND_BRACKET);
+                break;
+            case ')':
+                ignoreNewLines = false;
+                addToken(tk.types.RIGHT_ROUND_BRACKET);
+                break;
+            case '[':
+                ignoreNewLines = true;
+                addToken(tk.types.LEFT_SQUARE_BRACKET);
+                break;
+            case ']':
+                ignoreNewLines = false;
+                addToken(tk.types.RIGHT_SQUARE_BRACKET);
+                break;
+            case '{':
+                ignoreNewLines = true;
+                addToken(tk.types.LEFT_CURLY_BRACKET);
+                break;
+            case '}':
+                ignoreNewLines = false;
+                addToken(tk.types.RIGHT_CURLY_BRACKET);
+                break;
 
             // comments
             case '#': comment(); break;
@@ -106,9 +127,11 @@ function tokenize(program) {
     }
 
     function newLine() {
-        addEmptyToken(tk.types.NEW_LINE);
         line++;
-        scanIndentation();
+        if (!ignoreNewLines) {
+            addEmptyToken(tk.types.NEW_LINE);
+            scanIndentation();
+        }
     }
 
     function string() {
