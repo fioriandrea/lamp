@@ -178,4 +178,4 @@ function parse(tokens) {
 }
 
 
-module.exports = parse;
+exports.parse = parse;

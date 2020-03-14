@@ -265,4 +265,4 @@ function scan(program) {
     return layOut(tokenize(program));
 }
 
-module.exports = scan;
+exports.scan = scan;
