@@ -65,3 +65,13 @@ exports.Logical = class {
     }
 }
 
+exports.Array = class {
+    constructor(exprList) {
+        this.exprList = exprList;
+    }
+
+    accept(visitor) {
+        return visitor.visitArrayExpr(this);
+    }
+}
+

@@ -17,8 +17,8 @@ class Interpreter {
                 return right;
                 break;
             case tk.types.PLUS_PLUS:
-                this._checkBothStrings(left, operator, right);
-                return left + right;
+                this._checkBothConcatenable(left, operator, right);
+                return this._concat(left, right);
                 break;
             case tk.types.PLUS:
                 this._checkBothNumbers(left, operator, right);
@@ -117,6 +117,19 @@ class Interpreter {
         }
     }
 
+    visitArrayExpr(expr) {
+        const valueList = [];
+        for (let i = 0; i < expr.exprList.length; i++) {
+            valueList.push(this.evaluate(expr.exprList[i]));
+        }
+        return valueList;
+    }
+
+    _concat(left, right) {
+        if (this._isArray(left)) return left.concat(right);
+        else return left + right;
+    }
+
     _isTruthy(val) {
         if (val === false || val === null || val === 0) return false;
         else return true;
@@ -134,16 +147,27 @@ class Interpreter {
         return (typeof val) === 'string';
     }
 
-    _areBothNumbers(leftVal, rightVal) {
-        return this._isNumber(leftVal) && this._isNumber(rightVal);
+    _isArray(val) {
+        return Array.isArray(val);
+    }
+
+    _checkBothConcatenable(left, operator, right) {
+        if ((this._isArray(left) && this._isArray(right)) ||
+        (this._isString(left) && this._isString(right))) return;
+
+        throw this._error(operator, 'operands must be both strings or both arrays');
+    }
+
+    _error(operator, message) {
+        const rte = new RuntimeError(operator, message);
+        er.runtimeError(rte);
+        return rte;
     }
 
     _checkAllType(operator, message, typeCheck, vals) {
         for (let i = 0; i < vals.length; i++) {
             if (!typeCheck(vals[i])) {
-                const rte = new RuntimeError(operator, message);
-                er.runtimeError(rte);
-                throw rte;
+                throw this._error(operator, message);
             }
         }
     }
@@ -152,21 +176,12 @@ class Interpreter {
         this._checkAllType(operator, message, val => this._isNumber(val), vals);
     }
 
-
-    _checkAllStrings(operator, message, ...vals) {
-        this._checkAllType(operator, message, val => this._isString(val), vals);
-    }
-
     _checkAllIntegers(operator, message, ...vals) {
         this._checkAllType(operator, message, val => this._isInteger(val), vals);
     }
 
     _checkBothNumbers(left, operator, right) {
         this._checkAllNumbers(operator, 'operands must be numbers', left, right);
-    }
-
-    _checkBothStrings(left, operator, right) {
-        this._checkAllStrings(operator, 'operands must be strings', left, right);
     }
 
     _checkBothIntegers(left, operator, right) {

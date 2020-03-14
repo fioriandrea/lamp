@@ -17,21 +17,25 @@ function parse(tokens) {
     }
 
     function comma() {
-        let left = ternary();
+        let left = nonCommaExpr();
         while (eatAny(tk.types.COMMA)) {
             const operator = previous();
-            const right = ternary();
+            const right = nonCommaExpr();
             left = new ex.Binary(left, operator, right);
         }
         return left;
     }
 
+    function nonCommaExpr() {
+        return ternary();
+    }
+
     function ternary() {
         let first = logicalSum();
         if (eatAny(tk.types.QUESTION_MARK)) {
-            const second = expression();
+            const second = ternary();
             eatError(tk.types.COLON, 'expect \':\' after \'?\' in ternary expression');
-            const third = expression();
+            const third = ternary();
             first = new ex.Ternary(first, second, third);
         }
         return first;
@@ -129,9 +133,25 @@ function parse(tokens) {
             const expr = expression();
             eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after expression');
             return new ex.Grouping(expr);
+        } else if (eatAny(tk.types.LEFT_SQUARE_BRACKET)) { // array literal
+            return array();
         } else {
             throw error(peek(), 'unexpected token');
         }
+    }
+
+    function array() {
+        if (eatAny(tk.types.RIGHT_SQUARE_BRACKET)) {
+            return new ex.Array([]);
+        }
+
+        const valueList = [nonCommaExpr()];
+        while (check(tk.types.COMMA)) {
+            consume();
+            valueList.push(nonCommaExpr());
+        }
+        eatError(tk.types.RIGHT_SQUARE_BRACKET, 'expect \']\' after array literal');
+        return new ex.Array(valueList);
     }
 
     function eatAny(...types) {
@@ -169,7 +189,8 @@ function parse(tokens) {
     }
 
     function consume() {
-        return tokens[scan++];
+        if (!atEnd()) scan++;
+        return previous();
     }
 
     function atEnd() {
