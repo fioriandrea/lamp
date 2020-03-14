@@ -25,9 +25,9 @@ function parse(tokens) {
             else if (eatAny(tk.types.LET)) return let();
             else if (eatAny(tk.types.IF)) return ifStat();
             else if (eatAny(tk.types.WHILE)) return whileStat();
+            else if (eatAny(tk.types.FUNC)) return func();
             else return expressionStat();
         } catch(e) {
-            console.log(e);
             synchronize();
             return null; // garbage statement
         }
@@ -63,11 +63,13 @@ function parse(tokens) {
     function ifStat() {
         const conditionalList = [];
 
+        // if
         let condition = expression();
         eatError(tk.types.INDENT, 'expect INDENT after if condition');
         let blockStat = block();
         conditionalList.push([condition, blockStat]);
 
+        // elif
         while (eatAny(tk.types.ELIF)) {
             condition = expression();
             eatError(tk.types.INDENT, 'expect INDENT after elif condition');
@@ -75,6 +77,7 @@ function parse(tokens) {
             conditionalList.push([condition, blockStat]);
         }
 
+        //else
         if (eatAny(tk.types.ELSE)) {
             condition = expression();
             eatError(tk.types.INDENT, 'expect INDENT after else');
@@ -90,6 +93,27 @@ function parse(tokens) {
         eatError(tk.types.INDENT, 'expect INDENT after while condition');
         const blockStat = block();
         return new st.While(condition, blockStat);
+    }
+
+    function func() {
+        eatError(tk.types.IDENTIFIER, 'expect identifier after \'function\'');
+        const identifier = previous();
+        eatError(tk.types.LEFT_ROUND_BRACKET, 'expect \'(\' after function name');
+
+        let paramList = [];
+        if (!eatAny(tk.types.RIGHT_ROUND_BRACKET)) {
+            do {
+                eatError(tk.types.IDENTIFIER, 'expect identifier as function parameter');
+                let identifier = previous();
+                paramList.push(identifier);
+            } while (eatAny(tk.types.COMMA));
+            eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after function parameters');
+        }
+
+        eatError(tk.types.INDENT, 'expect INDENT before function body');
+        const body = block();
+
+        return new st.Func(identifier, paramList, body);
     }
 
     function expressionStat() {
@@ -238,10 +262,10 @@ function parse(tokens) {
                 return [];
             }
 
-            const args = [nonCommaExpr()];
-            while (eatAny(tk.types.COMMA)) {
+            const args = [];
+            do {
                 args.push(nonCommaExpr());
-            }
+            } while (eatAny(tk.types.COMMA));
             eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after function call');
             return new ex.Call(caller, previous(), args);
         }

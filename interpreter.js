@@ -3,6 +3,25 @@ const Environment = require('./state/environment.js');
 const util = require('./util.js');
 const natives = require('./natives.js');
 
+class Function {
+    constructor(funcStat, closure) {
+        this.funcStat = funcStat;
+        this.closure = closure;
+    }
+
+    arity() {
+        return this.funcStat.paramList.length;
+    }
+
+    call(interpreter, args) {
+        const env = new Environment(this.closure);
+        for (let i = 0; i < this.arity(); i++) {
+            env.define(this.funcStat.paramList[i].lexeme, args[i]);
+        }
+        interpreter.executeBlockStat(this.funcStat.body.statList, env);
+    }
+}
+
 class Interpreter {
     constructor(statList) {
         this.statList = statList;
@@ -16,8 +35,12 @@ class Interpreter {
     }
 
     interpret() {
-        for (let i = 0; i < this.statList.length; i++) {
-            this.execute(this.statList[i]);
+        try {
+            for (let i = 0; i < this.statList.length; i++) {
+                this.execute(this.statList[i]);
+            }
+        } catch(e) {
+            util.runtimeError(e);
         }
     }
 
@@ -42,6 +65,7 @@ class Interpreter {
         this.executeBlockStat(stat.statList, new Environment(this.environment));
     }
 
+    // execute block with the given environment (useful for functions)
     executeBlockStat(statList, environment) {
         try {
             this.environment = environment;
@@ -53,6 +77,7 @@ class Interpreter {
 
     visitIfStat(stat) {
         const conditionalList = stat.conditionalList;
+        console.log(stat);
 
         for (let i = 0; i < conditionalList.length; i++) {
             const condition = this.evaluate(conditionalList[i][0]);
@@ -69,6 +94,11 @@ class Interpreter {
         while (util.isTruthy(this.evaluate(stat.condition))) {
             this.execute(stat.block);
         }
+    }
+
+    visitFuncStat(stat) {
+        const func = new Function(stat, this.environment);
+        this.environment.define(stat.identifier.lexeme, func);
     }
 
     visitExpressionStat(stat) {

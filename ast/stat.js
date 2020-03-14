@@ -60,3 +60,15 @@ exports.While = class {
     }
 }
 
+exports.Func = class {
+    constructor(identifier, paramList, body) {
+        this.identifier = identifier;
+        this.paramList = paramList;
+        this.body = body;
+    }
+
+    accept(visitor) {
+        return visitor.visitFuncStat(this);
+    }
+}
+
