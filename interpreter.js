@@ -152,6 +152,11 @@ class Interpreter {
         return valueList;
     }
 
+    visitMapExpr(expr) {
+        const pairs = expr.exprPairs.map(p => [this.evaluate(p[0]), this.evaluate(p[1])]);
+        return new Map(pairs);
+    }
+
     // helpers
 
     _concat(left, right) {

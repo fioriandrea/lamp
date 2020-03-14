@@ -166,6 +166,8 @@ function parse(tokens) {
             return new ex.Grouping(expr);
         } else if (eatAny(tk.types.LEFT_SQUARE_BRACKET)) { // array literal
             return array();
+        } else if (eatAny(tk.types.LEFT_CURLY_BRACKET)) { // map literal
+            return map();
         } else {
             throw error(peek(), 'unexpected token');
         }
@@ -183,6 +185,28 @@ function parse(tokens) {
         }
         eatError(tk.types.RIGHT_SQUARE_BRACKET, 'expect \']\' after array literal');
         return new ex.Array(valueList);
+    }
+
+    function map() {
+        if (eatAny(tk.types.RIGHT_CURLY_BRACKET)) {
+            return new ex.Map([]);
+        }
+
+        const pairList = [];
+
+        let pair = [nonCommaExpr()];
+        eatError(tk.types.ARROW, 'expect \'=>\' inside map');
+        pair.push(nonCommaExpr());
+        pairList.push(pair);
+        while (eatAny(tk.types.COMMA)) {
+            pair = [];
+            pair.push(nonCommaExpr());
+            eatError(tk.types.ARROW, 'expect \'=>\' inside map');
+            pair.push(nonCommaExpr());
+            pairList.push(pair);
+        }
+        eatError(tk.types.RIGHT_CURLY_BRACKET, 'expect \'}\' after map literal');
+        return new ex.Map(pairList);
     }
 
     function eatAny(...types) {

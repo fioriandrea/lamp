@@ -75,3 +75,13 @@ exports.Array = class {
     }
 }
 
+exports.Map = class {
+    constructor(exprPairs) {
+        this.exprPairs = exprPairs;
+    }
+
+    accept(visitor) {
+        return visitor.visitMapExpr(this);
+    }
+}
+
