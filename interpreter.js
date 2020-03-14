@@ -51,19 +51,19 @@ class Interpreter {
                 return left !== right;
                 break;
             case tk.types.LESS:
-                this._checkBothNumbers(left, operator, right);
+                this._checkBothComparable(left, operator, right);
                 return left < right;
                 break;
             case tk.types.LESS_EQUAL:
-                this._checkBothNumbers(left, operator, right);
+                this._checkBothComparable(left, operator, right);
                 return left <= right;
                 break;
             case tk.types.GREATER:
-                this._checkBothNumbers(left, operator, right);
+                this._checkBothComparable(left, operator, right);
                 return left > right;
                 break;
             case tk.types.GREATER_EQUAL:
-                this._checkBothNumbers(left, operator, right);
+                this._checkBothComparable(left, operator, right);
                 return left >= right;
                 break;
         }
@@ -151,6 +151,12 @@ class Interpreter {
         return Array.isArray(val);
     }
 
+    _error(operator, message) {
+        const rte = new RuntimeError(operator, message);
+        er.runtimeError(rte);
+        return rte;
+    }
+
     _checkBothConcatenable(left, operator, right) {
         if ((this._isArray(left) && this._isArray(right)) ||
         (this._isString(left) && this._isString(right))) return;
@@ -158,38 +164,23 @@ class Interpreter {
         throw this._error(operator, 'operands must be both strings or both arrays');
     }
 
-    _error(operator, message) {
-        const rte = new RuntimeError(operator, message);
-        er.runtimeError(rte);
-        return rte;
-    }
-
-    _checkAllType(operator, message, typeCheck, vals) {
-        for (let i = 0; i < vals.length; i++) {
-            if (!typeCheck(vals[i])) {
-                throw this._error(operator, message);
-            }
-        }
-    }
-
-    _checkAllNumbers(operator, message, ...vals) {
-        this._checkAllType(operator, message, val => this._isNumber(val), vals);
-    }
-
-    _checkAllIntegers(operator, message, ...vals) {
-        this._checkAllType(operator, message, val => this._isInteger(val), vals);
+    _checkBothComparable(left, operator, right) {
+        this._checkBothNumbers(left, operator, right);
     }
 
     _checkBothNumbers(left, operator, right) {
-        this._checkAllNumbers(operator, 'operands must be numbers', left, right);
+        if (this._isNumber(left) && this._isNumber(right)) return;
+        throw this._error(operator, 'operands must be numbers');
     }
 
     _checkBothIntegers(left, operator, right) {
-        this._checkAllIntegers(operator, 'operands must be integers', left, right);
+        if (this._isInteger(left) && this._isInteger(right)) return;
+        throw this._error(operator, 'operands must be integers');
     }
 
     _checkSingleNumber(operator, right) {
-        this._checkAllNumbers(operator, 'operand must be a number', right);
+        if (this._isNumber(right)) return;
+        throw this._error(operator, 'operand must be a number');
     }
 }
 
