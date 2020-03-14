@@ -2,7 +2,7 @@ const tk = require('../token.js');
 
 let hasCompiletimeError = false;
 
-function reportCompiletimeError(line, whereInLine, report) {
+function report(line, whereInLine, report) {
     hasCompiletimeError = true;
     console.error(`Error [line ${line}]: ${whereInLine} ${report}`);
 }
@@ -12,13 +12,17 @@ exports.hasCompiletimeError = function() {
 };
 
 exports.lexerError = function(line, report) {
-    reportCompiletimeError(line, '', report);
+    report(line, '', report);
 }
 
 exports.parserError = function(token, report) {
     if (token.type === tk.types.EOF) {
-        reportCompiletimeError(token.line, 'at end of file:', report);
+        report(token.line, 'at end of file:', report);
     } else {
-        reportCompiletimeError(token.line, `at '${token.lexeme}':`, report);
+        report(token.line, `at '${token.lexeme}':`, report);
     }
+}
+
+exports.runtimeError = function(rtError, report) {
+    report(rtError.token.line, `at '${token.lexeme}':`, report);
 }
