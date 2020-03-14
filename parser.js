@@ -24,8 +24,10 @@ function parse(tokens) {
             if (eatAny(tk.types.PRINT)) return print();
             else if (eatAny(tk.types.LET)) return let();
             else if (eatAny(tk.types.IF)) return ifStat();
+            else if (eatAny(tk.types.WHILE)) return whileStat();
             else return expressionStat();
         } catch(e) {
+            console.log(e);
             synchronize();
             return null; // garbage statement
         }
@@ -81,6 +83,13 @@ function parse(tokens) {
         }
 
         return new st.If(conditionalList);
+    }
+
+    function whileStat() {
+        const condition = expression();
+        eatError(tk.types.INDENT, 'expect INDENT after while condition');
+        const blockStat = block();
+        return new st.While(condition, blockStat);
     }
 
     function expressionStat() {
@@ -213,7 +222,29 @@ function parse(tokens) {
             const right = unary();
             return new ex.Unary(operator, right);
         }
-        return primary();
+        return call();
+    }
+
+    function call() {
+        let caller = primary();
+        while (eatAny(tk.types.LEFT_ROUND_BRACKET)) {
+            caller = argList(caller);
+        }
+
+        return caller;
+
+        function argList(caller) {
+            if (eatAny(tk.types.RIGHT_ROUND_BRACKET)) {
+                return [];
+            }
+
+            const args = [nonCommaExpr()];
+            while (eatAny(tk.types.COMMA)) {
+                args.push(nonCommaExpr());
+            }
+            eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after function call');
+            return new ex.Call(caller, previous(), args);
+        }
     }
 
     function primary() {

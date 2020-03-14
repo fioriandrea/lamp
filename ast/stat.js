@@ -49,3 +49,14 @@ exports.If = class {
     }
 }
 
+exports.While = class {
+    constructor(condition, block) {
+        this.condition = condition;
+        this.block = block;
+    }
+
+    accept(visitor) {
+        return visitor.visitWhileStat(this);
+    }
+}
+

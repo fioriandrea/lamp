@@ -1,12 +1,18 @@
 const tk = require('./token.js');
-const er = require('./errors/errorReporter.js');
-const {RuntimeError} = require('./errors/errors.js');
 const Environment = require('./state/environment.js');
+const util = require('./util.js');
+const natives = require('./natives.js');
 
 class Interpreter {
     constructor(statList) {
         this.statList = statList;
-        this.environment = new Environment();
+        this.global = new Environment();
+        this.environment = new Environment(this.global);
+        this._initializeNatives();
+    }
+
+    _initializeNatives() {
+        natives.forEach(n => this.global.define(n.name(), n));
     }
 
     interpret() {
@@ -52,10 +58,16 @@ class Interpreter {
             const condition = this.evaluate(conditionalList[i][0]);
             const body = conditionalList[i][1];
 
-            if (this._isTruthy(condition)) {
+            if (util.isTruthy(condition)) {
                 this.execute(body);
                 break;
             }
+        }
+    }
+
+    visitWhileStat(stat) {
+        while (util.isTruthy(this.evaluate(stat.condition))) {
+            this.execute(stat.block);
         }
     }
 
@@ -80,7 +92,7 @@ class Interpreter {
                 break;
             case tk.types.PLUS_PLUS:
                 this._checkBothConcatenable(left, operator, right);
-                return this._concat(left, right);
+                return util.concat(left, right);
                 break;
             case tk.types.PLUS:
                 this._checkBothNumbers(left, operator, right);
@@ -141,7 +153,7 @@ class Interpreter {
                 return -right;
                 break;
             case tk.types.EXCLAMATION_MARK:
-                return this._isTruthy(right);
+                return util.isTruthy(right);
                 break;
         }
     }
@@ -158,7 +170,7 @@ class Interpreter {
         const firstExpr = expr.first;
         const secondExpr = expr.second;
         const thirdExpr = expr.third;
-        return this._isTruthy(this.evaluate(firstExpr)) ? this.evaluate(secondExpr) : this.evaluate(thirdExpr);
+        return util.isTruthy(this.evaluate(firstExpr)) ? this.evaluate(secondExpr) : this.evaluate(thirdExpr);
     }
 
     visitAssignExpr(expr) {
@@ -167,20 +179,31 @@ class Interpreter {
         return this.environment.assign(assigned, expression);
     }
 
+    visitCallExpr(expr) {
+        const callee = this.evaluate(expr.nameExpr);
+        const args = expr.argList.map(arg => this.evaluate(arg));
+        if (!util.isFunction(callee)) {
+            throw util.runtimeError(expr.bracket, `${callee} is not a function`);
+        } else if (callee.arity() !== args.length) {
+            throw util.runtimeError(expr.bracket, `expected ${callee.arity()} arguments but got ${args.length}`);
+        }
+        return callee.call(this, args);
+    }
+
     visitLogicalExpr(expr) {
         const left = this.evaluate(expr.left);
         const operator = expr.operator;
 
         switch (operator.type) {
             case tk.types.OR:
-                return this._isTruthy(left) ? true : this.evaluate(expr.right);
+                return util.isTruthy(left) ? true : this.evaluate(expr.right);
                 break;
             case tk.types.AND:
-                return !this._isTruthy(left) ? false : this.evaluate(expr.right);
+                return !util.isTruthy(left) ? false : this.evaluate(expr.right);
                 break;
             case tk.types.XOR:
                 const right = this.evaluate(expr.right);
-                return this._isTruthy(left) ? !this._isTruthy(right) : this._isTruthy(right);
+                return util.isTruthy(left) ? !util.isTruthy(right) : util.isTruthy(right);
                 break;
         }
     }
@@ -204,43 +227,11 @@ class Interpreter {
 
     // helpers
 
-    _concat(left, right) {
-        if (this._isArray(left)) return left.concat(right);
-        else return left + right;
-    }
-
-    _isTruthy(val) {
-        if (val === false || val === null || val === 0) return false;
-        else return true;
-    }
-
-    _isNumber(val) {
-        return (typeof val) === 'number';
-    }
-
-    _isInteger(val) {
-        return Number.isInteger(val);
-    }
-
-    _isString(val) {
-        return (typeof val) === 'string';
-    }
-
-    _isArray(val) {
-        return Array.isArray(val);
-    }
-
-    _error(operator, message) {
-        const rte = new RuntimeError(operator, message);
-        er.runtimeError(rte);
-        return rte;
-    }
-
     _checkBothConcatenable(left, operator, right) {
-        if ((this._isArray(left) && this._isArray(right)) ||
-        (this._isString(left) && this._isString(right))) return;
+        if ((util.isArray(left) && util.isArray(right)) ||
+        (util.isString(left) && util.isString(right))) return;
 
-        throw this._error(operator, 'operands must be both strings or both arrays');
+        throw util.runtimeError(operator, 'operands must be both strings or both arrays');
     }
 
     _checkBothComparable(left, operator, right) {
@@ -248,18 +239,18 @@ class Interpreter {
     }
 
     _checkBothNumbers(left, operator, right) {
-        if (this._isNumber(left) && this._isNumber(right)) return;
-        throw this._error(operator, 'operands must be numbers');
+        if (util.isNumber(left) && util.isNumber(right)) return;
+        throw util.runtimeError(operator, 'operands must be numbers');
     }
 
     _checkBothIntegers(left, operator, right) {
-        if (this._isInteger(left) && this._isInteger(right)) return;
-        throw this._error(operator, 'operands must be integers');
+        if (util.isInteger(left) && util.isInteger(right)) return;
+        throw util.runtimeError(operator, 'operands must be integers');
     }
 
     _checkSingleNumber(operator, right) {
-        if (this._isNumber(right)) return;
-        throw this._error(operator, 'operand must be a number');
+        if (util.isNumber(right)) return;
+        throw util.runtimeError(operator, 'operand must be a number');
     }
 }
 

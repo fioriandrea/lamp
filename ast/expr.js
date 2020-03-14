@@ -106,3 +106,15 @@ exports.Map = class {
     }
 }
 
+exports.Call = class {
+    constructor(nameExpr, bracket, argList) {
+        this.nameExpr = nameExpr;
+        this.bracket = bracket;
+        this.argList = argList;
+    }
+
+    accept(visitor) {
+        return visitor.visitCallExpr(this);
+    }
+}
+
