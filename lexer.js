@@ -115,7 +115,7 @@ function tokenize(program) {
                 } else if (isAlpha(ch)) {
                     identifier();
                 } else {
-                    er.error(line, 'unexpected character');
+                    er.lexerError(line, 'unexpected character');
                 }
 
                 break;
@@ -140,7 +140,7 @@ function tokenize(program) {
             consume();
         }
         if (atEnd()) {
-            er.error(line, 'unterminated string');
+            er.lexerError(line, 'unterminated string');
             return;
         }
         consume();
@@ -197,7 +197,7 @@ function tokenize(program) {
             }
 
             if (indentation !== indentStack[indentStack.length - 1]) {
-                er.error(line, 'indentation error');
+                er.lexerError(line, 'indentation error');
                 return;
             }
         }
