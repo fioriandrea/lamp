@@ -29,3 +29,23 @@ exports.Let = class {
     }
 }
 
+exports.Block = class {
+    constructor(statList) {
+        this.statList = statList;
+    }
+
+    accept(visitor) {
+        return visitor.visitBlockStat(this);
+    }
+}
+
+exports.If = class {
+    constructor(conditionalList) {
+        this.conditionalList = conditionalList;
+    }
+
+    accept(visitor) {
+        return visitor.visitIfStat(this);
+    }
+}
+

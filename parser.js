@@ -20,9 +20,10 @@ function parse(tokens) {
     // statements
 
     function statement() {
-        try {
+        try { // cannot have block by itself
             if (eatAny(tk.types.PRINT)) return print();
             else if (eatAny(tk.types.LET)) return let();
+            else if (eatAny(tk.types.IF)) return ifStat();
             else return expressionStat();
         } catch(e) {
             synchronize();
@@ -45,6 +46,41 @@ function parse(tokens) {
         }
         eatError(tk.types.NEW_LINE, 'expect new line after let statement');
         return new st.Let(identifier, valueExpr);
+    }
+
+    function block() {
+        const statList = [];
+        while (!check(tk.types.DEDENT)) {
+            statList.push(statement());
+        }
+
+        eatError(tk.types.DEDENT, 'expect DEDENT after block');
+        return new st.Block(statList);
+    }
+
+    function ifStat() {
+        const conditionalList = [];
+
+        let condition = expression();
+        eatError(tk.types.INDENT, 'expect INDENT after if condition');
+        let blockStat = block();
+        conditionalList.push([condition, blockStat]);
+
+        while (eatAny(tk.types.ELIF)) {
+            condition = expression();
+            eatError(tk.types.INDENT, 'expect INDENT after elif condition');
+            blockStat = block();
+            conditionalList.push([condition, blockStat]);
+        }
+
+        if (eatAny(tk.types.ELSE)) {
+            condition = expression();
+            eatError(tk.types.INDENT, 'expect INDENT after else');
+            blockStat = block();
+            conditionalList.push([condition, blockStat]);
+        }
+
+        return new st.If(conditionalList);
     }
 
     function expressionStat() {

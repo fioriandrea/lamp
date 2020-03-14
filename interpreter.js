@@ -32,6 +32,33 @@ class Interpreter {
         this.environment.define(name, value);
     }
 
+    visitBlockStat(stat) {
+        this.executeBlockStat(stat.statList, new Environment(this.environment));
+    }
+
+    executeBlockStat(statList, environment) {
+        try {
+            this.environment = environment;
+            statList.forEach(stat => this.execute(stat));
+        } finally {
+            this.environment = environment.enclosing;
+        }
+    }
+
+    visitIfStat(stat) {
+        const conditionalList = stat.conditionalList;
+
+        for (let i = 0; i < conditionalList.length; i++) {
+            const condition = this.evaluate(conditionalList[i][0]);
+            const body = conditionalList[i][1];
+
+            if (this._isTruthy(condition)) {
+                this.execute(body);
+                break;
+            }
+        }
+    }
+
     visitExpressionStat(stat) {
         this.evaluate(stat.expression);
     }
