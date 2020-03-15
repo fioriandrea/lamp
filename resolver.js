@@ -4,6 +4,7 @@ class Resolver {
     constructor(hopTable) {
         this.hopTable = hopTable; // Map object
         this.scopes = [{}]; // stack with an empty scope on top
+        this.functionCounter = 0;
     }
 
     start(statList) {
@@ -45,6 +46,8 @@ class Resolver {
     }
 
     visitFuncStat(stat) {
+        this.functionCounter++;
+
         this._declare(stat.identifier);
         this._define(stat.identifier);
 
@@ -55,9 +58,14 @@ class Resolver {
         });
         stat.body.statList.forEach(s => this.resolve(s));
         this._endScope();
+
+        this.functionCounter--;
     }
 
     visitRetStat(stat) {
+        if (this.functionCounter <= 0) {
+            er.compiletimeError(stat.token, 'can\'t have a ret statement outside of a function');
+        }
         if (stat.value !== null) this.resolve(stat.value);
     }
 
