@@ -1,7 +1,7 @@
 const tk = require('./token.js');
 const Environment = require('./state/environment.js');
 const util = require('./util.js');
-const natives = require('./natives.js');
+const builtins = require('./builtins.js');
 
 class Function {
     constructor(funcStat, closure) {
@@ -31,7 +31,7 @@ class Interpreter {
     }
 
     _initializeNatives() {
-        natives.forEach(n => this.global.define(n.name(), n));
+        builtins.forEach(n => this.global.define(n.name(), n));
     }
 
     interpret() {
