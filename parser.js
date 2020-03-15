@@ -267,7 +267,7 @@ function parse(tokens) {
 
         function argList(caller) {
             if (eatAny(tk.types.RIGHT_ROUND_BRACKET)) {
-                return [];
+                return  new ex.Call(caller, previous(), []);
             }
 
             const args = [];
