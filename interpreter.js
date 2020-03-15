@@ -2,6 +2,7 @@ const tk = require('./token.js');
 const Environment = require('./state/environment.js');
 const util = require('./util.js');
 const builtins = require('./builtins.js');
+const jumps = require('./jumps.js');
 
 class Function {
     constructor(funcStat, closure) {
@@ -77,7 +78,6 @@ class Interpreter {
 
     visitIfStat(stat) {
         const conditionalList = stat.conditionalList;
-        console.log(stat);
 
         for (let i = 0; i < conditionalList.length; i++) {
             const condition = this.evaluate(conditionalList[i][0]);
@@ -99,6 +99,11 @@ class Interpreter {
     visitFuncStat(stat) {
         const func = new Function(stat, this.environment);
         this.environment.define(stat.identifier.lexeme, func);
+    }
+
+    visitRetStat(stat) {
+        const value = stat.value === null ? null : this.evaluate(stat.value);
+        throw new jumps.ReturnJump(value);
     }
 
     visitExpressionStat(stat) {
@@ -217,7 +222,15 @@ class Interpreter {
         } else if (callee.arity() !== args.length) {
             throw util.runtimeError(expr.bracket, `expected ${callee.arity()} arguments but got ${args.length}`);
         }
-        return callee.call(this, args);
+        try {
+            return callee.call(this, args);
+        } catch(e) {
+            if (e instanceof jumps.ReturnJump) {
+                return e.value;
+            } else {
+                throw e;
+            }
+        }
     }
 
     visitLogicalExpr(expr) {

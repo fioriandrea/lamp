@@ -26,6 +26,7 @@ function parse(tokens) {
             else if (eatAny(tk.types.IF)) return ifStat();
             else if (eatAny(tk.types.WHILE)) return whileStat();
             else if (eatAny(tk.types.FUNC)) return func();
+            else if (eatAny(tk.types.RET)) return ret();
             else return expressionStat();
         } catch(e) {
             synchronize();
@@ -120,6 +121,13 @@ function parse(tokens) {
         const expr = expression();
         eatError(tk.types.NEW_LINE, 'expect new line after expression statement');
         return new st.Expression(expr);
+    }
+
+    function ret() {
+        if (eatAny(tk.types.NEW_LINE)) return new st.Ret(null);
+        const value = expression();
+        eatError(tk.types.NEW_LINE, 'expect new line after ret statement');
+        return new st.Ret(value);
     }
 
     // expressions

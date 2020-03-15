@@ -72,3 +72,13 @@ exports.Func = class {
     }
 }
 
+exports.Ret = class {
+    constructor(value) {
+        this.value = value;
+    }
+
+    accept(visitor) {
+        return visitor.visitRetStat(this);
+    }
+}
+
