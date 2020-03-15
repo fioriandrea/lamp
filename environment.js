@@ -33,6 +33,22 @@ class Environment {
             throw new RuntimeError(token, `undefined variable '${lexeme}'`);
         }
     }
+
+    getAt(token, hops) {
+        return this.parent(hops).get(token);
+    }
+
+    assignAt(token, value, hops) {
+        return this.parent(hops).assign(token, value);
+    }
+
+    parent(hops) {
+        let env = this;
+        for (let i = 0; i < hops; i++) {
+            env = env.enclosing;
+        }
+        return env;
+    }
 }
 
 module.exports = Environment;

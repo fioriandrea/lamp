@@ -24,10 +24,11 @@ class Function {
 }
 
 class Interpreter {
-    constructor(statList) {
+    constructor(statList, hopTable) {
         this.statList = statList;
         this.global = new Environment();
         this.environment = new Environment(this.global);
+        this.hopTable = hopTable;
         this._initializeNatives();
     }
 
@@ -68,11 +69,15 @@ class Interpreter {
 
     // execute block with the given environment (useful for functions)
     executeBlockStat(statList, environment) {
+        const old = environment;
         try {
             this.environment = environment;
             statList.forEach(stat => this.execute(stat));
         } finally {
-            this.environment = environment.enclosing;
+            this.environment = old;
+            // you can't do this.environment = this.environment.enclosing because
+            // you might have a function and you would have as the new environment
+            // the function's closure
         }
     }
 
@@ -221,7 +226,13 @@ class Interpreter {
     visitAssignExpr(expr) {
         const assigned = expr.assigned.token;
         const expression = this.execute(expr.expression);
-        return this.environment.assign(assigned, expression);
+
+        const hops = this.hopTable.get(expr.assigned);
+        if (hops === undefined) {
+            return this.environment.assign(assigned, expression);
+        } else {
+            return this.environment.assignAt(assigned, expression, hops);
+        }
     }
 
     visitCallExpr(expr) {
@@ -262,7 +273,12 @@ class Interpreter {
     }
 
     visitVariableExpr(expr) {
-        return this.environment.get(expr.token);
+        const hops = this.hopTable.get(expr);
+        if (hops === undefined) {
+            return this.global.get(expr.token);
+        } else {
+            return this.environment.getAt(expr.token, hops);
+        }
     }
 
     visitArrayExpr(expr) {
