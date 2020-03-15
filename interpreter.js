@@ -1,6 +1,7 @@
 const tk = require('./token.js');
 const Environment = require('./environment.js');
 const util = require('./util.js');
+const er = require('./errors/errorReporter.js');
 const builtins = require('./builtins.js');
 const jumps = require('./jumps.js');
 
@@ -42,7 +43,7 @@ class Interpreter {
                 this.execute(this.statList[i]);
             }
         } catch(e) {
-            util.runtimeError(e);
+            er.runtimeError(e);
         }
     }
 
