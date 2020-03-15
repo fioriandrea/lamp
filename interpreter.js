@@ -1,5 +1,5 @@
 const tk = require('./token.js');
-const Environment = require('./state/environment.js');
+const Environment = require('./environment.js');
 const util = require('./util.js');
 const builtins = require('./builtins.js');
 const jumps = require('./jumps.js');
@@ -45,20 +45,20 @@ class Interpreter {
         }
     }
 
-    // statements
-
-    execute(stat) {
-        return stat.accept(this);
+    execute(visited) {
+        return visited.accept(this);
     }
 
+    // statements
+
     visitPrintStat(stat) {
-        const expr = this.evaluate(stat.expression);
+        const expr = this.execute(stat.expression);
         console.log(expr);
     }
 
     visitLetStat(stat) {
         const name = stat.identifier.lexeme;
-        const value = stat.expression === null ? null : this.evaluate(stat.expression);
+        const value = stat.expression === null ? null : this.execute(stat.expression);
         this.environment.define(name, value);
     }
 
@@ -80,7 +80,7 @@ class Interpreter {
         const conditionalList = stat.conditionalList;
 
         for (let i = 0; i < conditionalList.length; i++) {
-            const condition = this.evaluate(conditionalList[i][0]);
+            const condition = this.execute(conditionalList[i][0]);
             const body = conditionalList[i][1];
 
             if (util.isTruthy(condition)) {
@@ -91,7 +91,7 @@ class Interpreter {
     }
 
     visitWhileStat(stat) {
-        while (util.isTruthy(this.evaluate(stat.condition))) {
+        while (util.isTruthy(this.execute(stat.condition))) {
             this.execute(stat.block);
         }
     }
@@ -102,24 +102,20 @@ class Interpreter {
     }
 
     visitRetStat(stat) {
-        const value = stat.value === null ? null : this.evaluate(stat.value);
+        const value = stat.value === null ? null : this.execute(stat.value);
         throw new jumps.ReturnJump(value);
     }
 
     visitExpressionStat(stat) {
-        this.evaluate(stat.expression);
+        this.execute(stat.expression);
     }
 
     // expressions
 
-    evaluate(expr) {
-        return expr.accept(this);
-    }
-
     visitBinaryExpr(expr) {
-        const left = this.evaluate(expr.left);
+        const left = this.execute(expr.left);
         const operator = expr.operator;
-        const right = this.evaluate(expr.right);
+        const right = this.execute(expr.right);
 
         switch (operator.type) {
             case tk.types.COMMA:
@@ -198,25 +194,25 @@ class Interpreter {
     }
 
     visitGroupingExpr(expr) {
-        return this.evaluate(expr.expression);
+        return this.execute(expr.expression);
     }
 
     visitTernaryExpr(expr) {
         const firstExpr = expr.first;
         const secondExpr = expr.second;
         const thirdExpr = expr.third;
-        return util.isTruthy(this.evaluate(firstExpr)) ? this.evaluate(secondExpr) : this.evaluate(thirdExpr);
+        return util.isTruthy(this.execute(firstExpr)) ? this.execute(secondExpr) : this.execute(thirdExpr);
     }
 
     visitAssignExpr(expr) {
         const assigned = expr.assigned.token;
-        const expression = this.evaluate(expr.expression);
+        const expression = this.execute(expr.expression);
         return this.environment.assign(assigned, expression);
     }
 
     visitCallExpr(expr) {
-        const callee = this.evaluate(expr.nameExpr);
-        const args = expr.argList.map(arg => this.evaluate(arg));
+        const callee = this.execute(expr.nameExpr);
+        const args = expr.argList.map(arg => this.execute(arg));
         if (!util.isFunction(callee)) {
             throw util.runtimeError(expr.bracket, `${callee} is not a function`);
         } else if (callee.arity() !== args.length) {
@@ -234,18 +230,18 @@ class Interpreter {
     }
 
     visitLogicalExpr(expr) {
-        const left = this.evaluate(expr.left);
+        const left = this.execute(expr.left);
         const operator = expr.operator;
 
         switch (operator.type) {
             case tk.types.OR:
-                return util.isTruthy(left) ? true : this.evaluate(expr.right);
+                return util.isTruthy(left) ? true : this.execute(expr.right);
                 break;
             case tk.types.AND:
-                return !util.isTruthy(left) ? false : this.evaluate(expr.right);
+                return !util.isTruthy(left) ? false : this.execute(expr.right);
                 break;
             case tk.types.XOR:
-                const right = this.evaluate(expr.right);
+                const right = this.execute(expr.right);
                 return util.isTruthy(left) ? !util.isTruthy(right) : util.isTruthy(right);
                 break;
         }
@@ -258,13 +254,13 @@ class Interpreter {
     visitArrayExpr(expr) {
         const valueList = [];
         for (let i = 0; i < expr.exprList.length; i++) {
-            valueList.push(this.evaluate(expr.exprList[i]));
+            valueList.push(this.execute(expr.exprList[i]));
         }
         return valueList;
     }
 
     visitMapExpr(expr) {
-        const pairs = expr.exprPairs.map(p => [this.evaluate(p[0]), this.evaluate(p[1])]);
+        const pairs = expr.exprPairs.map(p => [this.execute(p[0]), this.execute(p[1])]);
         return new Map(pairs);
     }
 
