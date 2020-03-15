@@ -82,7 +82,7 @@ function parse(tokens) {
 
         //else
         if (eatAny(tk.types.ELSE)) {
-            condition = expression();
+            condition = new ex.Literal(true);
             eatError(tk.types.INDENT, 'expect INDENT after else');
             blockStat = block();
             conditionalList.push([condition, blockStat]);
