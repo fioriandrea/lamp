@@ -196,7 +196,7 @@ class Interpreter {
 
     visitUnaryExpr(expr) {
         const operator = expr.operator;
-        const right = expr.right;
+        const right = this.execute(expr.right);
 
         switch (operator.type) {
             case tk.types.MINUS:
