@@ -1,8 +1,8 @@
 const tk = require('./token.js');
-const er = require('./errors/errorReporter.js');
-const ex = require('./ast/expr.js');
-const st = require('./ast/stat.js');
-const {ParseError} = require('./errors/errors.js');
+const er = require('../errors/errorReporter.js');
+const ex = require('../ast/expr.js');
+const st = require('../ast/stat.js');
+const {ParseError} = require('../errors/errors.js');
 
 function parse(tokens) {
     let scan = 0;

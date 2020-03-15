@@ -1,4 +1,4 @@
-const er = require('./errors/errorReporter.js');
+const er = require('../errors/errorReporter.js');
 
 class Resolver {
     constructor(hopTable) {

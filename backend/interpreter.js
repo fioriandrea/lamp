@@ -1,7 +1,7 @@
-const tk = require('./token.js');
+const tk = require('../frontend/token.js');
 const Environment = require('./environment.js');
-const util = require('./util.js');
-const er = require('./errors/errorReporter.js');
+const util = require('../util/util.js');
+const er = require('../errors/errorReporter.js');
 const builtins = require('./builtins.js');
 const jumps = require('./jumps.js');
 

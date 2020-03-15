@@ -1,4 +1,4 @@
-const {RuntimeError} = require('./errors/errors.js');
+const {RuntimeError} = require('../errors/errors.js');
 
 class Environment {
     constructor(enclosing=null) {

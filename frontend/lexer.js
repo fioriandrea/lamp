@@ -1,5 +1,5 @@
 const tk = require('./token.js');
-const er = require('./errors/errorReporter.js');
+const er = require('../errors/errorReporter.js');
 
 function isNum(ch) {
     return /^[0-9]$/.test(ch);

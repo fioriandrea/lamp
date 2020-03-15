@@ -1,5 +1,5 @@
-const {RuntimeError} = require('./errors/errors.js');
-const er = require('./errors/errorReporter.js');
+const {RuntimeError} = require('../errors/errors.js');
+const er = require('../errors/errorReporter.js');
 
 module.exports = {
     isFunction(fun) {

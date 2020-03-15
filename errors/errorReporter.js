@@ -1,4 +1,4 @@
-const tk = require('../token.js');
+const tk = require('../frontend/token.js');
 
 let hasCompiletimeError = false;
 
