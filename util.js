@@ -32,9 +32,26 @@ module.exports = {
         return Array.isArray(val);
     },
 
+    isMap(val) {
+        return (typeof val === 'object') && (val instanceof Map);
+    },
+
+    isIndexable(val) {
+        return this.isMap(val) || this.isArray(val);
+    },
+
     runtimeError(operator, message) {
         const rte = new RuntimeError(operator, message);
-        er.runtimeError(rte);
         return rte;
     },
+
+    print(arg) {
+        if (arg === null) console.log('nihl');
+        else console.log(arg);
+    },
+
+    stringify(arg) {
+        if (arg === null) return 'nihl';
+        else return arg; // todo: do something which is not this hack
+    }
 };

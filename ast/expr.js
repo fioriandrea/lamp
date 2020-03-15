@@ -118,3 +118,15 @@ exports.Call = class {
     }
 }
 
+exports.Indexing = class {
+    constructor(nameExpr, bracket, expression) {
+        this.nameExpr = nameExpr;
+        this.bracket = bracket;
+        this.expression = expression;
+    }
+
+    accept(visitor) {
+        return visitor.visitIndexingExpr(this);
+    }
+}
+

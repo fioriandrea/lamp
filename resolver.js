@@ -120,6 +120,11 @@ class Resolver {
         expr.argList.forEach(a => this.resolve(a));
     }
 
+    visitIndexingExpr(expr) {
+        this.resolve(expr.nameExpr);
+        this.resolve(expr.expression);
+    }
+
     visitLogicalExpr(expr) {
         this.resolve(expr.left);
         this.resolve(expr.right);
@@ -153,7 +158,7 @@ class Resolver {
     }
 
     visitMapExpr(expr) {
-        expr.exprPairs(ep => {
+        expr.exprPairs.forEach(ep => {
             this.resolve(ep[0]);
             this.resolve(ep[1]);
         });

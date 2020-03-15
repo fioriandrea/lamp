@@ -274,15 +274,21 @@ function parse(tokens) {
 
     function call() {
         let caller = primary();
-        while (eatAny(tk.types.LEFT_ROUND_BRACKET)) {
-            caller = argList(caller);
+        for (;;) {
+            if (eatAny(tk.types.LEFT_ROUND_BRACKET)) {
+                caller = argList(caller);
+            } else if (eatAny(tk.types.LEFT_SQUARE_BRACKET)) {
+                caller = indexing(caller);
+            } else {
+                break;
+            }
         }
 
         return caller;
 
         function argList(caller) {
             if (eatAny(tk.types.RIGHT_ROUND_BRACKET)) {
-                return  new ex.Call(caller, previous(), []);
+                return new ex.Call(caller, previous(), []);
             }
 
             const args = [];
@@ -291,6 +297,16 @@ function parse(tokens) {
             } while (eatAny(tk.types.COMMA));
             eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after function call');
             return new ex.Call(caller, previous(), args);
+            // Call should really be FunctionCall
+        }
+
+        function indexing(caller) {
+            if (check(tk.types.RIGHT_SQUARE_BRACKET)) {
+                throw error(previous(), 'expected indexing for array/map');
+            }
+            const index = expression();
+            eatError(tk.types.RIGHT_SQUARE_BRACKET);
+            return new ex.Indexing(caller, previous(), index);
         }
     }
 

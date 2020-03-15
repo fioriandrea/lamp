@@ -55,7 +55,7 @@ class Interpreter {
 
     visitPrintStat(stat) {
         const expr = this.execute(stat.expression);
-        console.log(expr);
+        util.print(expr);
     }
 
     visitLetStat(stat) {
@@ -240,7 +240,7 @@ class Interpreter {
         const callee = this.execute(expr.nameExpr);
         const args = expr.argList.map(arg => this.execute(arg));
         if (!util.isFunction(callee)) {
-            throw util.runtimeError(expr.bracket, `${callee} is not a function`);
+            throw util.runtimeError(expr.bracket, `${util.stringify(callee)} is not a function`);
         } else if (callee.arity() !== args.length) {
             throw util.runtimeError(expr.bracket, `expected ${callee.arity()} arguments but got ${args.length}`);
         }
@@ -252,6 +252,27 @@ class Interpreter {
             } else {
                 throw e;
             }
+        }
+    }
+
+    visitIndexingExpr(expr) {
+        const array = this.execute(expr.nameExpr);
+
+        if (!util.isIndexable(array)) {
+            throw util.runtimeError(expr.bracket, `${util.stringify(array)} is not indexable`);
+        }
+
+        const index = this.execute(expr.expression);
+        if (util.isArray(array)) {
+            if (!util.isNumber(index)) {
+                throw util.runtimeError(expr.bracket, `cannot use ${util.stringify(index)} as an array index`);
+            }
+            if (index >= array.length) {
+                throw util.runtimeError(expr.bracket, `index ${index} out of bound`);
+            }
+            return array[index];
+        } else { // isMap
+            return array.get(index) === undefined ? null : array.get(index);
         }
     }
 
