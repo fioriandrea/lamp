@@ -121,9 +121,10 @@ function parse(tokens) {
 
     function ret() {
         if (eatAny(tk.types.NEW_LINE)) return new st.Ret(null);
+        const token = previous();
         const value = expression();
         eatError(tk.types.NEW_LINE, 'expect new line after ret statement');
-        return new st.Ret(value);
+        return new st.Ret(token, value);
     }
 
     function breakStat() {

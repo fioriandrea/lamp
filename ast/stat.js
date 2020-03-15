@@ -73,7 +73,8 @@ exports.Func = class {
 }
 
 exports.Ret = class {
-    constructor(value) {
+    constructor(token, value) {
+        this.token = token;
         this.value = value;
     }
 
