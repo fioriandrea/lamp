@@ -263,6 +263,28 @@ class Interpreter {
         }
 
         const index = this.execute(expr.expression);
+        this.checkIndex(expr, array, index);
+        if (util.isArray(array)) return array[index];
+        else return array.get(index) === undefined ? null : array.get(index);
+    }
+
+    visitSetIndexExpr(expr) {
+        const array = this.execute(expr.assigned.nameExpr);
+
+        if (!util.isIndexable(array)) {
+            throw util.runtimeError(expr.indexable.bracket, `${util.stringify(array)} is not indexable`);
+        }
+
+        const index = this.execute(expr.assigned.expression);
+        this.checkIndex(expr.assigned, array, index);
+        const value = this.execute(expr.expression);
+
+        if (util.isArray(array)) array[index] = value;
+        else array.set(index, value);
+        return array;
+    }
+
+    checkIndex(expr, array, index) {
         if (util.isArray(array)) {
             if (!util.isNumber(index)) {
                 throw util.runtimeError(expr.bracket, `cannot use ${util.stringify(index)} as an array index`);

@@ -125,6 +125,11 @@ class Resolver {
         this.resolve(expr.expression);
     }
 
+    visitSetIndexExpr(expr) {
+        this.resolve(expr.assigned);
+        this.resolve(expr.expression);
+    }
+
     visitLogicalExpr(expr) {
         this.resolve(expr.left);
         this.resolve(expr.right);

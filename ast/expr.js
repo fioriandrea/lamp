@@ -130,3 +130,14 @@ exports.Indexing = class {
     }
 }
 
+exports.SetIndex = class {
+    constructor(assigned, expression) {
+        this.assigned = assigned;
+        this.expression = expression;
+    }
+
+    accept(visitor) {
+        return visitor.visitSetIndexExpr(this);
+    }
+}
+

@@ -174,6 +174,8 @@ function parse(tokens) {
 
             if (assigned instanceof ex.Variable) {
                 return new ex.Assign(assigned, value);
+            } else if (assigned instanceof ex.Indexing) {
+                return new ex.SetIndex(assigned, value);
             }
 
             error(equal, 'invalid assignment target')
@@ -301,12 +303,13 @@ function parse(tokens) {
         }
 
         function indexing(caller) {
+            const bracket = previous();
             if (check(tk.types.RIGHT_SQUARE_BRACKET)) {
-                throw error(previous(), 'expected indexing for array/map');
+                throw error(previous(), 'expected indexing for array or map');
             }
             const index = expression();
-            eatError(tk.types.RIGHT_SQUARE_BRACKET);
-            return new ex.Indexing(caller, previous(), index);
+            eatError(tk.types.RIGHT_SQUARE_BRACKET, 'expected \']\' after indexing expression');
+            return new ex.Indexing(caller, bracket, index);
         }
     }
 
