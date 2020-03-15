@@ -5,6 +5,7 @@ class Resolver {
         this.hopTable = hopTable; // Map object
         this.scopes = [{}]; // stack with an empty scope on top
         this.functionCounter = 0;
+        this.loopCounter = 0;
     }
 
     start(statList) {
@@ -41,8 +42,12 @@ class Resolver {
     }
 
     visitWhileStat(stat) {
+        this.loopCounter++;
+
         this.resolve(stat.condition);
         this.resolve(stat.block);
+
+        this.loopCounter--;
     }
 
     visitFuncStat(stat) {
@@ -70,11 +75,15 @@ class Resolver {
     }
 
     visitBreakStat(stat) {
-        return;
+        if (this.loopCounter <= 0) {
+            er.compiletimeError(stat.token, 'can\'t have a break statement outside of a loop');
+        }
     }
 
     visitContinueStat(stat) {
-        return;
+        if (this.loopCounter <= 0) {
+            er.compiletimeError(stat.token, 'can\'t have a continue statement outside of a loop');
+        }
     }
 
     visitExpressionStat(stat) {
