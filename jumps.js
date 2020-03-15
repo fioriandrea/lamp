@@ -4,4 +4,8 @@ class ReturnJump {
     }
 }
 
-module.exports = {ReturnJump};
+class BreakJump {}
+
+class ContinueJump {}
+
+module.exports = {ReturnJump, BreakJump, ContinueJump};

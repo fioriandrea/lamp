@@ -27,6 +27,8 @@ function parse(tokens) {
             else if (eatAny(tk.types.WHILE)) return whileStat();
             else if (eatAny(tk.types.FUNC)) return func();
             else if (eatAny(tk.types.RET)) return ret();
+            else if (eatAny(tk.types.BREAK)) return breakStat();
+            else if (eatAny(tk.types.CONTINUE)) return continueStat();
             else return expressionStat();
         } catch(e) {
             synchronize();
@@ -117,17 +119,29 @@ function parse(tokens) {
         return new st.Func(identifier, paramList, body);
     }
 
-    function expressionStat() {
-        const expr = expression();
-        eatError(tk.types.NEW_LINE, 'expect new line after expression statement');
-        return new st.Expression(expr);
-    }
-
     function ret() {
         if (eatAny(tk.types.NEW_LINE)) return new st.Ret(null);
         const value = expression();
         eatError(tk.types.NEW_LINE, 'expect new line after ret statement');
         return new st.Ret(value);
+    }
+
+    function breakStat() {
+        const token = previous();
+        eatAny(tk.types.NEW_LINE, 'expect new line after break statement');
+        return new st.Break(token);
+    }
+
+    function continueStat() {
+        const token = previous();
+        eatAny(tk.types.NEW_LINE, 'expect new line after continue statement');
+        return new st.Continue(token);
+    }
+
+    function expressionStat() {
+        const expr = expression();
+        eatError(tk.types.NEW_LINE, 'expect new line after expression statement');
+        return new st.Expression(expr);
     }
 
     // expressions
@@ -355,7 +369,7 @@ function parse(tokens) {
     }
 
     function error(token, message) {
-        er.parserError(token, message);
+        er.compiletimeError(token, message);
         return new ParseError(token, message);
     }
 

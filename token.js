@@ -48,6 +48,8 @@ const types = Object.freeze({
     WHILE: Symbol('while'),
     PRINT: Symbol('print'),
     NIHL: Symbol('nihl'),
+    BREAK: Symbol('break'),
+    CONTINUE: Symbol('continue'),
 
     // special
     INDENT: Symbol('indent'),

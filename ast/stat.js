@@ -82,3 +82,23 @@ exports.Ret = class {
     }
 }
 
+exports.Break = class {
+    constructor(token) {
+        this.token = token;
+    }
+
+    accept(visitor) {
+        return visitor.visitBreakStat(this);
+    }
+}
+
+exports.Continue = class {
+    constructor(token) {
+        this.token = token;
+    }
+
+    accept(visitor) {
+        return visitor.visitContinueStat(this);
+    }
+}
+

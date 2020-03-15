@@ -92,7 +92,13 @@ class Interpreter {
 
     visitWhileStat(stat) {
         while (util.isTruthy(this.execute(stat.condition))) {
-            this.execute(stat.block);
+            try {
+                this.execute(stat.block);
+            } catch(e) {
+                if (e instanceof jumps.BreakJump) break;
+                else if (e instanceof jumps.ContinueJump) continue;
+                else throw e;
+            }
         }
     }
 
@@ -104,6 +110,14 @@ class Interpreter {
     visitRetStat(stat) {
         const value = stat.value === null ? null : this.execute(stat.value);
         throw new jumps.ReturnJump(value);
+    }
+
+    visitBreakStat(stat) {
+        throw new jumps.BreakJump();
+    }
+
+    visitContinueStat(stat) {
+        throw new jumps.ContinueJump();
     }
 
     visitExpressionStat(stat) {

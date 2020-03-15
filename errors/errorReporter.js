@@ -15,7 +15,7 @@ exports.lexerError = function(line, report) {
     reportError(line, '', report);
 }
 
-exports.parserError = function(token, report) {
+exports.compiletimeError = function(token, report) {
     if (token.type === tk.types.EOF) {
         reportError(token.line, 'at end of file:', report);
     } else {

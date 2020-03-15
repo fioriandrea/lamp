@@ -28,6 +28,8 @@ const keywords = Object.freeze({
     'while': tk.types.WHILE,
     'print': tk.types.PRINT,
     'nihl': tk.types.NIHL,
+    'break': tk.types.BREAK,
+    'continue': tk.types.CONTINUE,
 });
 
 function tokenize(program) {
@@ -92,7 +94,7 @@ function tokenize(program) {
                 break;
 
             // comments
-            case '#': comment(); break;
+            case '@': comment(); break;
 
             // single or double character
             case '!': addToken(eat('=') ? tk.types.NOT_EQUAL : tk.types.EXCLAMATION_MARK); break;
@@ -188,8 +190,8 @@ function tokenize(program) {
 
     function scanIndentation() {
         let indentation = getIndentation();
-        // don't indent empty lines
-        if (atEnd() || peek() === '\n') return;
+        // don't indent empty lines or comments
+        if (atEnd() || peek() === '\n' || peek() === '@') return;
 
         if (indentation > indentStack[indentStack.length - 1]) {
             indentStack.push(indentation);
