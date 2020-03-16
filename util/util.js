@@ -60,6 +60,6 @@ module.exports = {
 
     stringify(arg) {
         if (arg === null) return 'nihl';
-        else return arg; // todo: do something which is not this hack
+        else return `${arg}`;
     }
 };
