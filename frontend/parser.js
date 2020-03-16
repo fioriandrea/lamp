@@ -289,6 +289,7 @@ function parse(tokens) {
         return caller;
 
         function argList(caller) {
+            const bracket = previous();
             if (eatAny(tk.types.RIGHT_ROUND_BRACKET)) {
                 return new ex.Call(caller, previous(), []);
             }
@@ -298,7 +299,7 @@ function parse(tokens) {
                 args.push(nonCommaExpr());
             } while (eatAny(tk.types.COMMA));
             eatError(tk.types.RIGHT_ROUND_BRACKET, 'expect \')\' after function call');
-            return new ex.Call(caller, previous(), args);
+            return new ex.Call(caller, bracket, args);
             // Call should really be FunctionCall
         }
 
