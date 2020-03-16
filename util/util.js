@@ -54,12 +54,37 @@ module.exports = {
     },
 
     print(arg) {
-        if (arg === null) console.log('nihl');
-        else console.log(arg);
+        console.log(this.stringify(arg));
     },
 
     stringify(arg) {
-        if (arg === null) return 'nihl';
-        else return `${arg}`;
-    }
+        return this._stringifyCircular(arg, [arg]);
+    },
+
+    _stringifyCircular(obj, seen) {
+        if (obj === null) return 'nihl';
+        else if (this.isNumber(obj)) return `${obj}`;
+        else if (this.isString(obj)) return `'${obj}'`;
+
+        let res = [];
+        obj.forEach((value, key) => {
+            let strValue;
+            let strKey;
+            if (seen.includes(value)) strValue = '[Circular]';
+            else strValue = this._stringifyCircular(value, seen);
+
+            if (seen.includes(key)) strValue = '[Circular]';
+            else strKey = this._stringifyCircular(key, seen);
+
+            if (typeof value === 'object') seen.push(value);
+            if (typeof key === 'object') seen.push(key);
+
+            if (this.isArray(obj)) {
+                res.push(strValue);
+            } else { // isMap
+                res.push(strKey + ` => ` + strValue);
+            }
+        });
+        return `${this.isArray(obj) ? '[' : '{'}${res.join(', ')}${this.isArray(obj) ? ']' : '}'}`;
+    },
 };
