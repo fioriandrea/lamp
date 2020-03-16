@@ -70,7 +70,7 @@ class Interpreter {
 
     // execute block with the given environment (useful for functions)
     executeBlockStat(statList, environment) {
-        const old = environment;
+        const old = this.environment;
         try {
             this.environment = environment;
             statList.forEach(stat => this.execute(stat));
