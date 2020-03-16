@@ -2,6 +2,7 @@ const tk = require('../frontend/token.js');
 const Environment = require('./environment.js');
 const util = require('../util/util.js');
 const er = require('../errors/errorReporter.js');
+const {TypeError} = require('../errors/errors.js');
 const builtins = require('./builtins.js');
 const jumps = require('./jumps.js');
 
@@ -249,6 +250,8 @@ class Interpreter {
         } catch(e) {
             if (e instanceof jumps.ReturnJump) {
                 return e.value;
+            } else if (e instanceof TypeError) {
+                throw util.runtimeError(expr.bracket, e.message);
             } else {
                 throw e;
             }

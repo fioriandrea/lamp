@@ -12,5 +12,12 @@ class RuntimeError extends Error {
     }
 }
 
+class TypeError extends Error {
+    constructor(message) {
+        super(message);
+    }
+}
+
 exports.ParseError = ParseError;
 exports.RuntimeError = RuntimeError;
+exports.TypeError = TypeError;

@@ -1,14 +1,14 @@
 const tk = require('../frontend/token.js');
 
-let hasCompiletimeError = false;
+let hasError = false;
 
 function reportError(line, whereInLine, report) {
     hasCompiletimeError = true;
     console.error(`Error [line ${line}]: ${whereInLine} ${report}`);
 }
 
-exports.hasCompiletimeError = function() {
-    return hasCompiletimeError;
+exports.hasError = function() {
+    return hasError;
 };
 
 exports.lexerError = function(line, report) {
@@ -24,5 +24,5 @@ exports.compiletimeError = function(token, report) {
 }
 
 exports.runtimeError = function(rtError) {
-    reportError(rtError.token.line, `at '${rtError.token.lexeme}':`, rtError.message);
+    reportError(rtError.token.line, `(at '${rtError.token.lexeme}')`, rtError.message);
 }
