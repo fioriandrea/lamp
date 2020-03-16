@@ -3,7 +3,7 @@ const tk = require('../frontend/token.js');
 let hasError = false;
 
 function reportError(line, whereInLine, report) {
-    hasCompiletimeError = true;
+    hasError = true;
     console.error(`Error [line ${line}]: ${whereInLine} ${report}`);
 }
 
