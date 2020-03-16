@@ -39,7 +39,7 @@ function tokenize(program) {
     let start = 0;
     let current = 0;
     let line = 1;
-    let ignoreNewLines = false;
+    let bracketDepth = 0;
 
     while (!atEnd()) {
         scanToken();
@@ -69,27 +69,27 @@ function tokenize(program) {
 
             // brackets
             case '(':
-                ignoreNewLines = true;
+                bracketDepth++;
                 addToken(tk.types.LEFT_ROUND_BRACKET);
                 break;
             case ')':
-                ignoreNewLines = false;
+                bracketDepth--;
                 addToken(tk.types.RIGHT_ROUND_BRACKET);
                 break;
             case '[':
-                ignoreNewLines = true;
+                bracketDepth++;
                 addToken(tk.types.LEFT_SQUARE_BRACKET);
                 break;
             case ']':
-                ignoreNewLines = false;
+                bracketDepth--;
                 addToken(tk.types.RIGHT_SQUARE_BRACKET);
                 break;
             case '{':
-                ignoreNewLines = true;
+                bracketDepth++;
                 addToken(tk.types.LEFT_CURLY_BRACKET);
                 break;
             case '}':
-                ignoreNewLines = false;
+                bracketDepth--;
                 addToken(tk.types.RIGHT_CURLY_BRACKET);
                 break;
 
@@ -134,7 +134,7 @@ function tokenize(program) {
 
     function newLine() {
         line++;
-        if (!ignoreNewLines) {
+        if (bracketDepth === 0) {
             addEmptyToken(tk.types.NEW_LINE);
             scanIndentation();
         }
