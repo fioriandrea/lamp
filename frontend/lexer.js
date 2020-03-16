@@ -40,6 +40,8 @@ function tokenize(program) {
     let current = 0;
     let line = 1;
     let bracketDepth = 0;
+    // common for all bracket types because even if I have (], such an error is
+    // detected by the parser
 
     while (!atEnd()) {
         scanToken();
