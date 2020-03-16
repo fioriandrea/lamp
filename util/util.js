@@ -36,8 +36,16 @@ module.exports = {
         return (typeof val === 'object') && (val instanceof Map);
     },
 
-    isIndexable(val) {
+    isGettable(val) {
+        return this.isMap(val) || this.isArray(val) || this.isString(val);
+    },
+
+    isSettable(val) {
         return this.isMap(val) || this.isArray(val);
+    },
+
+    isIntegerIndexed(val) {
+        return this.isArray(val) || this.isString(val);
     },
 
     runtimeError(operator, message) {

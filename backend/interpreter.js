@@ -241,9 +241,9 @@ class Interpreter {
         const callee = this.execute(expr.nameExpr);
         const args = expr.argList.map(arg => this.execute(arg));
         if (!util.isFunction(callee)) {
-            throw util.runtimeError(expr.bracket, `${util.stringify(callee)} is not a function`);
+            throw util.runtimeError(expr.bracket, `'${util.stringify(callee)}' is not a function`);
         } else if (callee.arity() !== args.length) {
-            throw util.runtimeError(expr.bracket, `expected ${callee.arity()} arguments but got ${args.length}`);
+            throw util.runtimeError(expr.bracket, `expected '${callee.arity()}' arguments but got ${args.length}`);
         }
         try {
             return callee.call(this, args);
@@ -261,21 +261,21 @@ class Interpreter {
     visitIndexingExpr(expr) {
         const array = this.execute(expr.nameExpr);
 
-        if (!util.isIndexable(array)) {
-            throw util.runtimeError(expr.bracket, `${util.stringify(array)} is not indexable`);
+        if (!util.isGettable(array)) {
+            throw util.runtimeError(expr.bracket, `'${util.stringify(array)}' is not indexable`);
         }
 
         const index = this.execute(expr.expression);
         this.checkIndex(expr, array, index);
-        if (util.isArray(array)) return array[index];
+        if (util.isArray(array) || util.isString(array)) return array[index];
         else return array.get(index) === undefined ? null : array.get(index);
     }
 
     visitSetIndexExpr(expr) {
         const array = this.execute(expr.assigned.nameExpr);
 
-        if (!util.isIndexable(array)) {
-            throw util.runtimeError(expr.indexable.bracket, `${util.stringify(array)} is not indexable`);
+        if (!util.isSettable(array)) {
+            throw util.runtimeError(expr.assigned.bracket, `cannot assign indexed value to '${util.stringify(array)}'`);
         }
 
         const index = this.execute(expr.assigned.expression);
@@ -288,12 +288,11 @@ class Interpreter {
     }
 
     checkIndex(expr, array, index) {
-        if (util.isArray(array)) {
-            if (!util.isNumber(index)) {
-                throw util.runtimeError(expr.bracket, `cannot use ${util.stringify(index)} as an array index`);
-            }
-            if (index >= array.length) {
-                throw util.runtimeError(expr.bracket, `index ${index} out of bound`);
+        if (util.isIntegerIndexed(array)) { // array and string
+            if (!util.isInteger(index)) {
+                throw util.runtimeError(expr.bracket, `expected integer index but got '${util.stringify(index)}'`);
+            } else if (index >= array.length) {
+                throw util.runtimeError(expr.bracket, `index '${index}' out of bound`);
             }
             return array[index];
         } else { // isMap
