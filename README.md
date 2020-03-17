@@ -44,8 +44,8 @@ call -> functionCall | indexing
 functionCall -> primary '(' argList ')'  
 argList -> nonCommaExpr (',' nonCommaExpr)* | ''  
 indexing -> primary '[' expression ']'
-primary -> STRING | NUMBER | TRUE | FALSE | NIHL | '(' expression ')' |
-           IDENTIFIER | array | map  
+primary -> STRING | NUMBER | TRUE | FALSE | NIHL   
+| '(' expression ')' | IDENTIFIER | array | map  
 array -> '[' arrayList ']'  
 arrayList -> nonCommaExpr (',' nonCommaExpr)* | ''  
 map -> '{' mapList '}'  
