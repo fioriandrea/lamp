@@ -53,7 +53,7 @@ After I read [Crafting Interpreters](http://www.craftinginterpreters.com/), I de
 
 ## Types
 
-Lamp currently has 6 types:
+Lamp currently has six types:
 
 * boolean
 * number (any floating point number)
@@ -89,7 +89,7 @@ Lamp currently has the following operators:
 
 ## Built-in functions
 
-Lamp currently has four built-in functions:
+Lamp currently has the following built-in functions:
 * len(array): returns the length of an array or a string
 * typeof(var): returns the type of a variable as a string
 * readFile(fileName): returns the content of a file as a string (synchronous)
