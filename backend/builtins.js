@@ -26,6 +26,7 @@ class Typeof {
     call(interpeter, args) {
         const arg = args[0];
         if (arg === null) return 'nihl';
+        if (util.isBoolean(arg)) return 'boolean';
         else if (util.isString(arg)) return 'string';
         else if (util.isNumber(arg)) return 'number';
         else if (util.isArray(arg)) return 'array';

@@ -16,6 +16,10 @@ module.exports = {
         else return true;
     },
 
+    isBoolean(val) {
+        return val === true || val === false;
+    },
+
     isNumber(val) {
         return (typeof val) === 'number';
     },
@@ -63,6 +67,7 @@ module.exports = {
 
     _stringifyCircular(obj, seen) {
         if (obj === null) return 'nihl';
+        if (this.isBoolean(obj)) return `${obj}`;
         else if (this.isNumber(obj)) return `${obj}`;
         else if (this.isString(obj)) return `'${obj}'`;
 
