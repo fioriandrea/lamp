@@ -9,48 +9,48 @@ higher order functions and other language constructs.
 
 ## Goals
 
-After I read [Crafting Interpreters](http://www.craftinginterpreters.com/), I decided I wanted to try to implement my small programming language.
+After I read [Crafting Interpreters](http://www.craftinginterpreters.com/), I decided I wanted to try to implement my small programming language. This language is the result of that attempt.
 
 ## Grammar
 
 program -> statement* EOF
 statement -> print | let | if | while | func |
-             ret | break | continue | expressionStat
-print -> 'print' expression NEW_LINE
-let -> 'let' IDENTIFIER '=' expression NEW_LINE
-if -> 'if' expression block ('elif' expression block)* ('else' block)?
-while -> 'while' expression block
-func -> 'func' IDENTIFIER '(' paramList ')' block
-ret -> 'ret' (expression)? NEW_LINE
-break -> 'break' NEW_LINE
-continue -> 'continue' NEW_LINE
-expressionStat -> expression NEW_LINE
-block -> INDENT statement* DEDENT
+             ret | break | continue | expressionStat  
+print -> 'print' expression NEW_LINE  
+let -> 'let' IDENTIFIER '=' expression NEW_LINE  
+if -> 'if' expression block ('elif' expression block)* ('else' block)?  
+while -> 'while' expression block  
+func -> 'func' IDENTIFIER '(' paramList ')' block  
+ret -> 'ret' (expression)? NEW_LINE  
+break -> 'break' NEW_LINE  
+continue -> 'continue' NEW_LINE  
+expressionStat -> expression NEW_LINE  
+block -> INDENT statement* DEDENT  
 
-expression -> comma
-comma -> nonCommaExpr (',' nonCommaExpr)*
-nonCommaExpr -> assign
-assign -> ternary '=' expression
-ternary -> logicalSum ('?' ternary : ternary)?
-logicalSum -> and (('or' | 'xor') and)*
-and -> equal ('and' equal)*
-equal -> comparison (('==' | '!=') comparison)*
-comparison -> sum (('<' | '<=' | '>' | '>=') sum)*
-sum -> mult (('+' | '-' | '++') mult)*
-mult -> pow (('*' | '/' | '%') pow)*
-pow -> unary | unary '^' pow
-unary -> call | ('-' | '!') unary
-call -> functionCall | indexing
-functionCall -> primary '(' argList ')'
-argList -> nonCommaExpr (',' nonCommaExpr)* | ''
+expression -> comma  
+comma -> nonCommaExpr (',' nonCommaExpr)*  
+nonCommaExpr -> assign  
+assign -> ternary '=' expression  
+ternary -> logicalSum ('?' ternary : ternary)?  
+logicalSum -> and (('or' | 'xor') and)*  
+and -> equal ('and' equal)*  
+equal -> comparison (('==' | '!=') comparison)*  
+comparison -> sum (('<' | '<=' | '>' | '>=') sum)*  
+sum -> mult (('+' | '-' | '++') mult)*  
+mult -> pow (('*' | '/' | '%') pow)*  
+pow -> unary | unary '^' pow  
+unary -> call | ('-' | '!') unary  
+call -> functionCall | indexing  
+functionCall -> primary '(' argList ')'  
+argList -> nonCommaExpr (',' nonCommaExpr)* | ''  
 indexing -> primary '[' expression ']'
 primary -> STRING | NUMBER | TRUE | FALSE | NIHL | '(' expression ')' |
-           IDENTIFIER | array | map
-array -> '[' arrayList ']'
-arrayList -> nonCommaExpr (',' nonCommaExpr)* | ''
-map -> '{' mapList '}'
-mapList -> mapElement (',' mapElement) | ''
-mapElement -> nonCommaExpr '=>' nonCommaExpr
+           IDENTIFIER | array | map  
+array -> '[' arrayList ']'  
+arrayList -> nonCommaExpr (',' nonCommaExpr)* | ''  
+map -> '{' mapList '}'  
+mapList -> mapElement (',' mapElement) | ''  
+mapElement -> nonCommaExpr '=>' nonCommaExpr  
 
 ## Types
 
