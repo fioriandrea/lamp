@@ -102,6 +102,7 @@ Lamp currently has four built-in functions:
 ### Arrays
 
 ```
+@ This is a comment
 print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]] ++ ['hi']
 print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]][3]
 ```
@@ -140,9 +141,8 @@ print 'guten' ++ ' morgen'
 ### Expressions
 
 ```
-@ This is a comment
-print (10 > 2 ? true : nihl) xor false @ expected result: true
-print (len([1, 2, 3] ++ ['asd', 'qwe']) == 5 and typeof(true) == 'boolean') xor true @ expected result: false
+print (10 > 2 ? true : nihl) xor false
+print (len([1, 2, 3] ++ ['asd', 'qwe']) == 5 and typeof(true) == 'boolean') xor true
 ```
 
 ### Variable Declaration
