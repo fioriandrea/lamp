@@ -42,6 +42,9 @@ function tokenize(program) {
     let bracketDepth = 0;
     // common for all bracket types because even if I have (], such an error is
     // detected by the parser
+    
+    scanIndentation(); // beginning indentation
+    if (indentStack.length > 1) er.lexerError(0, 'indentation error');
 
     while (!atEnd()) {
         scanToken();
