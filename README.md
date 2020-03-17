@@ -99,14 +99,14 @@ Lamp currently has four built-in functions:
 
 ## Sample Programs
 
-## Arrays
+### Arrays
 
 ```
 print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]] ++ ['hi']
 print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]][3]
 ```
 
-## Maps
+### Maps
 
 ```
 print {
@@ -130,14 +130,14 @@ print {
 }['non present']
 ```
 
-## Strings
+### Strings
 
 ```
 print 'guten morgen'[3]
 print 'guten' ++ ' morgen'
 ```
 
-## Expressions
+### Expressions
 
 ```
 @ This is a comment
@@ -145,7 +145,7 @@ print (10 > 2 ? true : nihl) xor false @ expected result: true
 print (len([1, 2, 3] ++ ['asd', 'qwe']) == 5 and typeof(true) == 'boolean') xor true @ expected result: false
 ```
 
-## Variable Declaration
+### Variable Declaration
 
 ```
 let meat = 'pork' ++ 'cooked'
