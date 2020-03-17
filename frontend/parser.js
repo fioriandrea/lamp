@@ -266,8 +266,10 @@ function parse(tokens) {
     }
 
     function unary() {
-        if (eatAny(tk.types.MINUS, tk.types.EXCLAMATION_MARK)) {
+        if (eatAny(tk.types.MINUS, tk.types.PLUS, tk.types.EXCLAMATION_MARK)) {
             const operator = previous();
+            if (operator.type === tk.types.PLUS)
+                error(operator, 'unary \'+\' not supported');
             const right = unary();
             return new ex.Unary(operator, right);
         }
