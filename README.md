@@ -99,6 +99,44 @@ Lamp currently has four built-in functions:
 
 ## Sample Programs
 
+## Arrays
+
+```
+print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]] ++ ['hi']
+print [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]][3]
+```
+
+## Maps
+
+```
+print {
+    'list' => [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]],
+    'meat' => true,
+    'horse' => true xor true,
+    false => 'true'
+}
+
+print {
+    'list' => [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]],
+    'meat' => true,
+    'horse' => true xor true,
+    false => 'true'
+}[false]
+
+print {
+    'list' => [1, 2, 'hallo', ['wie gehet es dir?', ['empty']]],
+    'meat' => true,
+    'horse' => true xor true
+}['non present']
+```
+
+## Strings
+
+```
+print 'guten morgen'[3]
+print 'guten' ++ ' morgen'
+```
+
 ## Expressions
 
 ```
