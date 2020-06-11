@@ -7,9 +7,9 @@ Lamp is a small, Python-like programming language implemented in JavaScript.
 The language is dynamically typed, has built-in arrays and dictionaries, closures,
 higher order functions and other language constructs.
 
-## Goals
+## Project Structure
 
-After I read [Crafting Interpreters](http://www.craftinginterpreters.com/), I decided I wanted to try to implement my small programming language. This language is the result of that attempt.
+The project structure is basically the same used in [Crafting Interpreters](http://www.craftinginterpreters.com/), although there are a few language differences.
 
 ## Grammar
 
