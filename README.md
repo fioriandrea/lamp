@@ -9,7 +9,7 @@ higher order functions and other language constructs.
 
 ## Project Structure
 
-The project structure is basically the same used in [Crafting Interpreters](http://www.craftinginterpreters.com/), although there are a few language differences.
+The project structure, as well as the basic framework, is basically the same used in [Crafting Interpreters](http://www.craftinginterpreters.com/), although there are a few language differences.
 
 ## Grammar
 
